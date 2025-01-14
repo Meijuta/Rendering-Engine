@@ -1,0 +1,17 @@
+{
+    "label": "build",
+    "type": "shell",
+    "command": "g++", // or your compiler
+    "args": [
+        "-g",
+        "test-programme.cpp",  
+        "windows-renderer.cpp",
+        "-o",
+        "test-programme.exe",  // Output file
+        "-lGDI32"  // Link against GDI32
+    ],
+    "group": {
+        "kind": "build",
+        "isDefault": true
+    }
+}
