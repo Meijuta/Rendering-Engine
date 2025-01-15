@@ -41,22 +41,25 @@ namespace renderer
         }
     }
 
-    LRESULT CALLBACK Renderer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK Renderer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) // Handles messages to the window
     {
         switch (uMsg)
         {
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+            break;
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
-
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
         }
+        return 0;
     }
 
     HWND windowHandle;
 
-    int Renderer::initialiseWindow(std::array<unsigned short, 2> dimensions, std::array<unsigned short, 2> origin, const WCHAR* windowTitle) 
+    int Renderer::initialiseWindow(std::array<unsigned short, 2> dimensions, std::array<unsigned short, 2> origin, const WCHAR* windowTitle) // Creates the window
     {
         // Define and register the window class
         WNDCLASSEX wc = {0};
@@ -95,6 +98,19 @@ namespace renderer
 
         return 0; // Return immediately after creating the window
     }
+
+    bool Renderer::checkAndSendMessage() // Checks if there is a message to the window and if there is one it sends it to the window. If the message is to close it returns false
+    {
+        MSG msg;
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                return false;
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        return true;
+    }
         
     HBITMAP Renderer::renderFrame(unsigned short frameWidth, unsigned short frameHeight) // Renders the frame 
     {
@@ -124,6 +140,7 @@ namespace renderer
         }
 
         SelectObject(frameDC, oldFrameBitmap); // Restore original frame bitmap in the DC
+        // -- Clean up -- //
         DeleteObject(oldFrameBitmap);
         DeleteObject(oldGraphicBitmap);
         DeleteDC(frameDC);
@@ -163,7 +180,7 @@ namespace renderer
         HDC hdcMem = CreateCompatibleDC(hdcWindow);
 
         // Create a test bitmap (solid red colour)
-        HBITMAP testBitmap = CreateCompatibleBitmap(hdcWindow, 512, 512);
+        HBITMAP testBitmap = CreateCompatibleBitmap(hdcWindow, 0x400, 0x400);
         HBITMAP oldBitmap = (HBITMAP)SelectObject(hdcMem, testBitmap);
 
         RECT rect = {0, 0, 512, 512};
@@ -180,7 +197,6 @@ namespace renderer
         DeleteDC(hdcMem);
         ReleaseDC(windowHandle, hdcWindow);
     }
-
 
     void Renderer::setPixelColour(unsigned short x, unsigned short y, std::array<unsigned char, 3> colour) // Sets an individual pixel's colour
     {

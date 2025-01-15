@@ -6,7 +6,7 @@
 #include <array>
 #include <string>
 
-#include <iostream> // comment out when not debugging
+//#include <iostream> // comment out when not debugging
 
 namespace renderer 
 {
@@ -15,12 +15,13 @@ namespace renderer
         private:
             std::vector<HBITMAP> renderQueue; // pointers to graphics for rendering
             HWND windowHandle;
-            static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+            static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // Handles messages to the window
         public:
             Renderer(); // Constructor
             ~Renderer(); // Destructor
             std::array<unsigned short, 2> getBitmapDimensions(HBITMAP hBitmap);
-            int initialiseWindow(std::array<unsigned short, 2> dimensions, std::array<unsigned short, 2> origin, const WCHAR* windowTitle = L"My Renderer Window"); // creates the window being rendered to.
+            int initialiseWindow(std::array<unsigned short, 2> dimensions, std::array<unsigned short, 2> origin, const WCHAR* windowTitle = L"My Renderer Window"); // Creates the window being rendered to
+            bool checkAndSendMessage(); // Checks if there is a message to the window and if there is one it sends it to the window. If the message is to close it returns false
             HBITMAP renderFrame(unsigned short frameWidth, unsigned short frameHeight); // Renders the frame
             void presentFrame(HBITMAP frame); // Presents the frame to the window
             void presentTestBitmap();
