@@ -415,6 +415,38 @@ namespace renderer
             }
         }
     }
+
+
+
+    void Renderer::drawCircleTrig(unsigned short x, unsigned short y, unsigned short radius, std::array<unsigned char, 3> colour, unsigned char opacity)
+    {
+
+    }
+
+    void Renderer::drawCircleRadiusCheck(unsigned short x, unsigned short y, unsigned short radius, std::array<unsigned char, 3> colour, unsigned char opacity)
+    {
+        for (unsigned int height = 0; height < 2*radius; height++)
+        {
+            for (unsigned int width = 0; width < 2*radius; width++)
+            {
+                if (sqrt(pow((signed int)(width-radius),2) + pow((signed int)(height-radius), 2)) <= radius) // TODO: fix
+                {
+                    setPixelColour
+                    (
+                        x + width-radius,
+                        y + height-radius,
+                        colour,
+                        opacity
+                    );
+                }
+            }
+        }
+
+        // potential optimisations:
+        // we know that a square of length sqrt(2)*radius from the furthest point along the diagonal from the origin will be within the circle
+        // for points above that square, we only need to check if theyre higher than the circle and vice versa for points on the left
+        // we can also easily mirror any checks we find, dividing the number of checks by 4    
+    }
 }
 
 /*

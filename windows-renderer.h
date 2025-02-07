@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <cmath>
 
 //#include <iostream> // comment out when not debugging
 
@@ -34,6 +35,8 @@ namespace renderer
             void appendBitmapToQueue(HBITMAP bitmap); // Adds a bitmap to renderQueue
             HBITMAP imageToHBITMAP(const WCHAR* imagePath, unsigned int width=0, unsigned int height=0); // Takes a bmp file from a given path and returns it as an HBITMAP
             void drawRectangle(unsigned short x, unsigned short y, unsigned short width, unsigned short height, std::array<unsigned char, 3> colour, unsigned char opacity = 0xFF); // I REALLY hope this doesnt need explaining
+            void drawCircleTrig(unsigned short x, unsigned short y, unsigned short radius, std::array<unsigned char, 3> colour, unsigned char opacity = 0xFF);
+            void drawCircleRadiusCheck(unsigned short x, unsigned short y, unsigned short radius, std::array<unsigned char, 3> colour, unsigned char opacity = 0xFF);
     };
 }
 
