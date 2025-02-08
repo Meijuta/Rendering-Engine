@@ -2,6 +2,8 @@
 #include <chrono>
 #include "windows-renderer.h" // COMPILE windows-renderer.cpp SEPERATELY
 
+renderer::Renderer renderingEngine = renderer::Renderer(); 
+std::array<unsigned short, 2> winDims = {0x400,0x400};
 
 void attachConsole() // For debugging
 {
@@ -11,18 +13,8 @@ void attachConsole() // For debugging
     freopen("CONIN$", "r", stdin);   // Redirect stdin to console
 }
 
-renderer::Renderer renderingEngine = renderer::Renderer(); 
-std::array<unsigned short, 2> winDims = {0x400,0x400};
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) // Winmain makes the console not open
+void parabola()
 {
-    attachConsole(); // Attach console for debugging
-    renderingEngine.initialiseWindow(winDims, {0, 0}); 
-
-    HBITMAP prepImage = renderingEngine.imageToHBITMAP(L"blackbuck.bmp");
-    //renderingEngine.appendBitmapToQueue(prepImage);
-
-    /* Draws a test parabola
     for (int i = 0; i < winDims[1]; i++)
     {
         for (int ii = 0; ii < winDims[0]; ii++)
@@ -31,24 +23,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             renderingEngine.setPixelColour(ii,i,c);
         }
     }
-    */
+}
+
+void testFunctionSpeed(unsigned int testNum) // todo: take the  method as an input
+{
+    std::cout << "start" << std::endl;
     auto start = std::chrono::high_resolution_clock::now(); // Start timer
 
-    for (int i = 0; i < pow(10,3); i++) 
+    for (int i = 0; i < testNum; i++) 
     {
         renderingEngine.drawCircleRadiusCheck(300,300, 137, std::array<unsigned char, 3>{0x00, 0x00, 0xFF});
-        renderingEngine.clearRenderQueue();
     }
 
     auto end = std::chrono::high_resolution_clock::now(); // End timer
-    std::chrono::duration<double> duration = (end - start)/10; // Compute duration
+    std::chrono::duration<double> duration = (end - start); // Compute duration
 
     std::cout << "Execution time: " << duration.count() << " seconds\n";
+}
 
+
+
+
+
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) // Winmain makes the console not open
+{
+    attachConsole(); // Attach console for debugging
+    renderingEngine.initialiseWindow(winDims, {0, 0}); 
+
+    testFunctionSpeed(1);
+    auto renderedFrame = renderingEngine.renderFrame(); // renderFrame has a memory leak so...
     while (renderingEngine.checkAndSendMessage()) // while the window is open
     {
         // Render and present frames
-        renderingEngine.presentFrame(renderingEngine.renderFrame());
+        renderingEngine.presentFrame(renderedFrame);
+        
     }
 
     return 0;
