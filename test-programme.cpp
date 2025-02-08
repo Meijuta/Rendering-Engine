@@ -1,11 +1,22 @@
-//#include <iostream> // Comment out when not debugging
+#include <iostream> 
+#include <chrono>
 #include "windows-renderer.h" // COMPILE windows-renderer.cpp SEPERATELY
+
+
+void attachConsole() // For debugging
+{
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout); // Redirect stdout to console
+    freopen("CONOUT$", "w", stderr); // Redirect stderr to console
+    freopen("CONIN$", "r", stdin);   // Redirect stdin to console
+}
 
 renderer::Renderer renderingEngine = renderer::Renderer(); 
 std::array<unsigned short, 2> winDims = {0x400,0x400};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) // Winmain makes the console not open
 {
+    attachConsole(); // Attach console for debugging
     renderingEngine.initialiseWindow(winDims, {0, 0}); 
 
     HBITMAP prepImage = renderingEngine.imageToHBITMAP(L"blackbuck.bmp");
@@ -21,7 +32,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
     }
     */
-   renderingEngine.drawCircleRadiusCheck(300,300, 137, std::array<unsigned char, 3>{0x00, 0x00, 0xFF});
+    auto start = std::chrono::high_resolution_clock::now(); // Start timer
+
+    for (int i = 0; i < pow(10,3); i++) 
+    {
+        renderingEngine.drawCircleRadiusCheck(300,300, 137, std::array<unsigned char, 3>{0x00, 0x00, 0xFF});
+        renderingEngine.clearRenderQueue();
+    }
+
+    auto end = std::chrono::high_resolution_clock::now(); // End timer
+    std::chrono::duration<double> duration = (end - start)/10; // Compute duration
+
+    std::cout << "Execution time: " << duration.count() << " seconds\n";
 
     while (renderingEngine.checkAndSendMessage()) // while the window is open
     {
@@ -43,8 +65,6 @@ ar rcs libwindows-renderer.a windows-renderer.o
 g++ test-programme.cpp -o test-programme -L. -lwindows-renderer -lgdi32 -lmsimg32 -mwindows
 
 .\test-programme.exe
-
-
 */
 
 // Here's a gun in case it goes rogue:

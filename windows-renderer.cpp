@@ -342,7 +342,7 @@ namespace renderer
         }
 
         // Get a pointer to the pixel data
-        UINT32* pixels = static_cast<UINT32*>(dibSection.dsBm.bmBits);
+        UINT32* pixels = static_cast<UINT32*>(dibSection.dsBm.bmBits); // potential optimisation: store the pointer to the pixel data as a variable within the class so it doesnt need to be fetched each time
         if (!pixels)
         {
             return false; // Failed to get pixel data
@@ -425,9 +425,9 @@ namespace renderer
 
     void Renderer::drawCircleRadiusCheck(unsigned short x, unsigned short y, unsigned short radius, std::array<unsigned char, 3> colour, unsigned char opacity)
     {
-        for (unsigned int height = 0; height < 2*radius; height++)
+        for (unsigned int height = 0; height <= radius; height++)
         {
-            for (unsigned int width = 0; width < 2*radius; width++)
+            for (unsigned int width = 0; width <= radius; width++)
             {
                 if (sqrt(pow((signed int)(width-radius),2) + pow((signed int)(height-radius), 2)) <= radius) // TODO: fix
                 {
@@ -435,6 +435,30 @@ namespace renderer
                     (
                         x + width-radius,
                         y + height-radius,
+                        colour,
+                        opacity
+                    );
+
+                    setPixelColour
+                    (
+                        x + radius-width,
+                        y + height-radius,
+                        colour,
+                        opacity
+                    );
+
+                    setPixelColour
+                    (
+                        x + width-radius,
+                        y + radius-height,
+                        colour,
+                        opacity
+                    );
+                    
+                    setPixelColour
+                    (
+                        x + radius-width,
+                        y + radius-height,
                         colour,
                         opacity
                     );
@@ -446,6 +470,10 @@ namespace renderer
         // we know that a square of length sqrt(2)*radius from the furthest point along the diagonal from the origin will be within the circle
         // for points above that square, we only need to check if theyre higher than the circle and vice versa for points on the left
         // we can also easily mirror any checks we find, dividing the number of checks by 4    
+
+        // Time to render 100 circles:
+        // No optimisations: todo
+        // Mirroring: 
     }
 }
 
